@@ -1,0 +1,24 @@
+{
+  "name": "profile-mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server exposing GitHub projects, Medium articles, and work experience as tools",
+  "type": "module",
+  "bin": { "profile-mcp-server": "dist/index.js" },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "test": "vitest run",
+    "inspect": "npx @modelcontextprotocol/inspector node dist/index.js"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.0.5"
+  }
+}

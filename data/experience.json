@@ -1,0 +1,19 @@
+{
+  "roles": [
+    {
+      "title": "Founding Full Stack & AI Engineer",
+      "company": "TeamEx",
+      "client": "Essential Estates (Summerall Law)",
+      "industry": "legal-tech",
+      "start": "2025-05",
+      "end": null,
+      "highlights": [
+        "Built the platform from zero to production with React, TypeScript, NestJS, PostgreSQL and TypeORM",
+        "Set up and ran AWS infrastructure with GitHub Actions CI/CD",
+        "Built AI features in Python and FastAPI using LLMs and RAG for document processing",
+        "Hired, onboarded and led the engineering team"
+      ],
+      "stack": ["React", "TypeScript", "NestJS", "PostgreSQL", "TypeORM", "Python", "FastAPI", "LLMs", "RAG", "AWS", "GitHub Actions"]
+    }
+  ]
+}
