@@ -1,3 +1,5 @@
 node_modules/
 dist/
 .env
+# Your own profile; point PROFILE_EXPERIENCE_PATH at it
+data/*.local.json

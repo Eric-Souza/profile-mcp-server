@@ -1,4 +1,7 @@
 {
+  "name": "Eric Souza",
+  "headline": "Senior Full Stack & AI Engineer",
+  "summary": "Full stack and AI engineer with 8+ years of experience owning products from architecture to production, across legal-tech, healthcare, fintech, e-commerce, and AI. Builds React, Node, and Python applications, and AI features with LLMs and RAG.",
   "roles": [
     {
       "title": "Founding Full Stack & AI Engineer",
@@ -15,5 +18,20 @@
       ],
       "stack": ["React", "TypeScript", "NestJS", "PostgreSQL", "TypeORM", "Python", "FastAPI", "LLMs", "RAG", "AWS", "GitHub Actions"]
     }
-  ]
+  ],
+  "projects": [
+    {
+      "name": "Job Application Copilot",
+      "description": "A LangGraph agent that tailors a resume to a job posting, with RAG over the candidate's experience and human review before anything is finalized",
+      "stack": ["Python", "LangGraph", "FastAPI", "pgvector", "React"],
+      "url": "https://github.com/Eric-Souza/job-application-copilot"
+    }
+  ],
+  "skills": {
+    "Languages": ["TypeScript", "JavaScript", "Python", "SQL"],
+    "Frontend": ["React"],
+    "Backend": ["Node.js", "NestJS", "FastAPI", "PostgreSQL", "TypeORM"],
+    "AI / LLM": ["LLMs", "RAG", "LangGraph"],
+    "Infrastructure": ["AWS", "GCP", "GitHub Actions", "CI/CD"]
+  }
 }
