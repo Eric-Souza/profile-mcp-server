@@ -4,7 +4,7 @@ A [Model Context Protocol](https://modelcontextprotocol.io) server that gives AI
 
 It also feeds the [Job Application Copilot](https://github.com/Eric-Souza/job-application-copilot), which can load experience through this server instead of local files.
 
-> **Status:** all five tools, the resume resource, and the prompt work over stdio and Streamable HTTP. Tested with Vitest and with a real MCP client over both transports.
+> **Status:** all five tools (six with the optional copilot index), the resume resource, and the prompt work over stdio and Streamable HTTP. Tested with Vitest and with a real MCP client over both transports.
 
 ## Tools
 
@@ -15,6 +15,7 @@ It also feeds the [Job Application Copilot](https://github.com/Eric-Souza/job-ap
 | `list_articles` | Lists recent articles with title, date, link, and tags | Medium RSS feed |
 | `get_experience` | Returns roles, companies, dates, highlights, and stack, optionally filtered by `skill` or `industry` | `data/experience.json` |
 | `search_profile` | Keyword search across projects, articles, and experience, best matches first | All of the above |
+| `search_experience_index` | *Optional.* Full-text search over the Job Application Copilot's indexed evidence (one chunk per resume bullet, with its role), optionally filtered by `section` | The copilot's Postgres |
 
 Every tool has a Zod input schema and an output schema, and returns its data both as structured content and as JSON text, for clients that don't read structured content yet. A source that fails (the GitHub rate limit, say) comes back as a tool error with a message that says what to do. `search_profile` skips the failing source, searches the others, and lists the failure under `errors`.
 
@@ -57,7 +58,7 @@ Client: Essential Estates (Summerall Law)
 - [x] Zod-validated tool inputs and outputs
 - [x] In-memory caching of GitHub and Medium responses (10 minutes by default; failed requests aren't cached)
 - [x] Tests with Vitest (GitHub and Medium faked, no network), plus a stdio smoke test with a real MCP client
-- [ ] Optional: read-only Postgres tool for querying the copilot's experience index
+- [x] Optional read-only Postgres tool over the copilot's experience index (`search_experience_index`)
 
 ## Stack
 
@@ -75,7 +76,7 @@ profile-mcp-server/
     search.ts           # keyword scoring for search_profile
     cache.ts            # TTL cache for GitHub and Medium
     tools/              # one file per tool group
-    sources/            # GitHub REST, Medium RSS, the local experience file
+    sources/            # GitHub REST, Medium RSS, the local experience file, the copilot index
   data/
     experience.json     # roles, projects, and skills (a public sample)
   scripts/smoke.mjs     # launches the built server over stdio and calls it
@@ -87,7 +88,7 @@ profile-mcp-server/
 ```bash
 npm install
 npm run build
-npm test                 # 22 tests, no network
+npm test                 # 28 tests, no network (Postgres runs in-process via PGlite)
 npm run smoke            # starts dist/index.js over stdio, lists the tools, prints the resume
 ```
 
@@ -100,7 +101,12 @@ Copy `.env.example` to `.env` to change the defaults. The server reads `.env` fr
 | `MEDIUM_USERNAME` | `eric.bh18souza` | Whose feed to read |
 | `PROFILE_EXPERIENCE_PATH` | `data/experience.json` | Your own profile file, relative to the repo or absolute |
 | `CACHE_TTL_SECONDS` | `600` | How long GitHub and Medium responses are reused |
+| `COPILOT_DATABASE_URL` | none | The copilot's `DATABASE_URL`; adds `search_experience_index` |
 | `PORT` | `3000` | Port for `--http` |
+
+### The copilot's experience index
+
+Set `COPILOT_DATABASE_URL` to the Job Application Copilot's `DATABASE_URL` (the `postgresql+psycopg://` form works as is) and the server adds `search_experience_index`. It runs one fixed, parameterized query using the copilot's own keyword matching (any term of the query, ranked with `ts_rank_cd`), in sessions set to `default_transaction_read_only`, so it can't write. It does keyword search only, since vector search would need the copilot's embedding model.
 
 ### Your own profile
 

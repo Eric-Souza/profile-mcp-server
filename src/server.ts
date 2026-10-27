@@ -5,10 +5,12 @@ import { z } from 'zod'
 import { TtlCache } from './cache.js'
 import type { Config } from './config.js'
 import { renderResume } from './resume.js'
+import { CopilotIndex } from './sources/copilot-index.js'
 import { loadProfile } from './sources/experience.js'
 import { GitHubSource } from './sources/github.js'
 import { MediumSource } from './sources/medium.js'
 import { registerArticleTools } from './tools/articles.js'
+import { registerCopilotTools } from './tools/copilot.js'
 import { registerExperienceTools } from './tools/experience.js'
 import { registerProjectTools } from './tools/projects.js'
 import { registerSearchTool } from './tools/search.js'
@@ -23,6 +25,7 @@ export function createSources(config: Config, fetchFn: typeof fetch = fetch): So
     medium: new MediumSource(config.mediumUsername, cache, fetchFn),
     profile: () => loadProfile(config.experiencePath),
     cache,
+    copilotIndex: config.copilotDatabaseUrl ? CopilotIndex.connect(config.copilotDatabaseUrl) : undefined,
   }
 }
 
@@ -33,6 +36,7 @@ export function createServer(sources: Sources): McpServer {
   registerArticleTools(server, sources)
   registerExperienceTools(server, sources)
   registerSearchTool(server, sources)
+  if (sources.copilotIndex) registerCopilotTools(server, sources.copilotIndex)
 
   server.registerResource(
     'resume',

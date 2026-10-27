@@ -1,4 +1,5 @@
 import type { TtlCache } from '../cache.js'
+import type { CopilotIndex } from '../sources/copilot-index.js'
 import type { Profile } from '../sources/experience.js'
 import type { GitHubSource } from '../sources/github.js'
 import type { MediumSource } from '../sources/medium.js'
@@ -9,6 +10,8 @@ export interface Sources {
   medium: MediumSource
   profile: () => Promise<Profile>
   cache: TtlCache
+  /** Set when COPILOT_DATABASE_URL is; adds search_experience_index */
+  copilotIndex?: CopilotIndex
 }
 
 /** A tool result with the same data as structured content and as JSON text, for older clients. */

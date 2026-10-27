@@ -12,6 +12,7 @@ export interface Config {
   mediumUsername: string
   experiencePath: string
   cacheTtlMs: number
+  copilotDatabaseUrl?: string
 }
 
 /** Load the repo's .env into process.env, if there is one. Variables already set win. */
@@ -27,5 +28,6 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     mediumUsername: env.MEDIUM_USERNAME || 'eric.bh18souza',
     experiencePath: resolve(REPO_ROOT, env.PROFILE_EXPERIENCE_PATH || 'data/experience.json'),
     cacheTtlMs: Number(env.CACHE_TTL_SECONDS || 600) * 1000,
+    copilotDatabaseUrl: env.COPILOT_DATABASE_URL || undefined,
   }
 }
