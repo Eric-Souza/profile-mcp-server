@@ -54,7 +54,8 @@ Client: Essential Estates (Summerall Law)
 ## Features
 
 - [x] stdio transport for Claude Desktop and Claude Code
-- [x] Streamable HTTP transport for remote clients (stateless, `POST /mcp`)
+- [x] Streamable HTTP transport for remote clients (stateless, `POST /mcp`, plus `GET /health` for probes)
+- [x] Docker image for the HTTP transport, deployed on Kubernetes next to the [copilot](https://github.com/Eric-Souza/job-application-copilot/tree/main/deploy/k8s)
 - [x] Zod-validated tool inputs and outputs
 - [x] In-memory caching of GitHub and Medium responses (10 minutes by default; failed requests aren't cached)
 - [x] Tests with Vitest (GitHub and Medium faked, no network), plus a stdio smoke test with a real MCP client
@@ -163,6 +164,15 @@ npm run build && node dist/index.js --http      # http://localhost:3000/mcp
 ```
 
 The HTTP transport is stateless (a new server per request, sharing one cache) and has no authentication, so run it on localhost or behind something that adds auth.
+
+**In Docker:**
+
+```bash
+docker build -t profile-mcp-server:local .
+docker run --rm -p 3000:3000 -e GITHUB_TOKEN profile-mcp-server:local   # http://localhost:3000/mcp
+```
+
+Because the server is stateless, it scales horizontally: the copilot's Kubernetes manifests run two replicas behind one Service. Each replica has its own cache, and readiness and liveness probes check `/health`.
 
 **MCP Inspector:** `npm run inspect` opens the Inspector against the built server, to call tools by hand.
 

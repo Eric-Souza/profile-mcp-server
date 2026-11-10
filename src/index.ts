@@ -2,7 +2,7 @@
 // Server entry point: stdio by default (Claude Desktop, Claude Code), Streamable HTTP with --http.
 //
 //   node dist/index.js                 stdio
-//   node dist/index.js --http          http://localhost:3000/mcp (PORT to change it)
+//   node dist/index.js --http          http://localhost:3000/mcp (PORT to change it), GET /health
 
 import { createServer as createHttpServer, type IncomingMessage } from 'node:http'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
@@ -28,6 +28,11 @@ async function serveHttp(port: number) {
   // Stateless: a new server and transport per request, sharing the sources (and their cache)
   const http = createHttpServer(async (req, res) => {
     const path = new URL(req.url ?? '/', 'http://localhost').pathname
+    // For container health checks; it doesn't call GitHub or Medium, so it stays cheap
+    if (path === '/health' && req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' }).end('{"status":"ok"}')
+      return
+    }
     if (path !== '/mcp') {
       res.writeHead(404).end('Not found. The MCP endpoint is /mcp.')
       return
@@ -55,6 +60,9 @@ async function serveHttp(port: number) {
     }
   })
   http.listen(port, () => log(`listening on http://localhost:${port}/mcp`))
+  // Containers stop with SIGTERM. Node ignores it when it runs as PID 1, so exit explicitly once
+  // in-flight requests finish, instead of waiting to be killed
+  process.once('SIGTERM', () => http.close(() => process.exit(0)))
 }
 
 async function main() {

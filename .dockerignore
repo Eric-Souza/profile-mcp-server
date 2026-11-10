@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+data/*.local.json
+tests/
+docs/
+Dockerfile
